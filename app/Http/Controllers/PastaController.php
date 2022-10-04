@@ -63,14 +63,8 @@ class PastaController extends Controller
      */
     public function show($id)
     {
-        $formato = Pasta::find($id);
-
-        if ($formato) {
-            return view('pasta.show', compact('formato'));
-        }
-
-        abort(404);
-
+        $formato = Pasta::findOrFail($id);
+        return view('pasta.show', compact('formato'));
     }
 
     /**
@@ -79,9 +73,13 @@ class PastaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Pasta $pasta)
     {
-        //
+        if ($pasta) {
+            return view('pasta.edit', ['formato' => $pasta]);
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -91,9 +89,21 @@ class PastaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Pasta $pasta)
     {
-        //
+
+        if ($pasta) {
+
+            $data = $request->all();
+            $pasta->update($data);
+            $pasta->save();
+
+            return redirect()->route('pastas.edit', ['pasta' => $pasta])->with('status', 'Pasta aggiornata con successo');
+
+        } else {
+            abort(404);
+        }
+
     }
 
     /**
@@ -102,8 +112,15 @@ class PastaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Pasta $pasta)
     {
-        //
+
+        if ($pasta) {
+            $pasta->delete();
+            return redirect()->route('pastas.index');
+        } else {
+            abort(404);
+        }
+
     }
 }

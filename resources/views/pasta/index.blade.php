@@ -12,12 +12,10 @@
         <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col">src</th>
               <th scope="col">titolo</th>
               <th scope="col">tipo</th>
               <th scope="col">cottura</th>
               <th scope="col">peso</th>
-              <th scope="col">descrizione</th>
               <th scope="col">azioni</th>
             </tr>
           </thead>
@@ -26,13 +24,21 @@
             @foreach ($pastas as $formato)
              <tr>
                 <th scope="row">{{$formato->id}}</th>
-                <td>{{$formato->src}}</td>
                 <td>{{$formato->titolo}}</td>
                 <td>{{$formato->tipo}}</td>
                 <td>{{$formato->cottura}}</td>
                 <td>{{$formato->peso}}</td>
-                <td>{!!$formato->descrizione!!}</td>
-                <td><a class="btn btn-primary" href="{{route('pastas.show', ['pasta' => $formato->id])}}">Vedi</a></td>
+                <td>
+                    <a class="btn btn-primary" href="{{route('pastas.show', ['pasta' => $formato])}}">Vedi</a>
+                    <a class="btn btn-warning" href="{{route('pastas.edit', ['pasta' => $formato])}}">Modifica</a>
+
+                    <form action="{{route('pastas.destroy', ['pasta' => $formato])}}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Elimina</button>
+                    </form>
+
+                </td>
               </tr>
             @endforeach
 
