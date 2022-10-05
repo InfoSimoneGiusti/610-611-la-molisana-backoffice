@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Pasta;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PastaController extends Controller
 {
@@ -37,6 +38,18 @@ class PastaController extends Controller
      */
     public function store(Request $request)
     {
+
+        $request->validate(
+            [
+                'src' => 'required|max:255|url',
+                'titolo' => 'required|max:50|min:4',
+                'tipo' => ['required', Rule::in(['corta', 'cortissima', 'lunga'])],
+                'cottura' => 'required|max:10|min:5',
+                'peso' => 'required|max:10|min:4',
+                'descrizione' => 'nullable|max:65535'
+            ]
+        );
+
         $data = $request->all();
 
         $newPasta = new Pasta();
@@ -61,10 +74,9 @@ class PastaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Pasta $pasta)
     {
-        $formato = Pasta::findOrFail($id);
-        return view('pasta.show', compact('formato'));
+        return view('pasta.show', ['formato' => $pasta]);
     }
 
     /**
@@ -75,11 +87,7 @@ class PastaController extends Controller
      */
     public function edit(Pasta $pasta)
     {
-        if ($pasta) {
-            return view('pasta.edit', ['formato' => $pasta]);
-        } else {
-            abort(404);
-        }
+        return view('pasta.edit', ['formato' => $pasta]);
     }
 
     /**
@@ -92,17 +100,26 @@ class PastaController extends Controller
     public function update(Request $request, Pasta $pasta)
     {
 
-        if ($pasta) {
+        $request->validate(
+            [
+                'src' => 'required|max:255|url',
+                'titolo' => 'required|max:50|min:4',
+                'tipo' => ['required', Rule::in(['corta', 'cortissima', 'lunga'])],
+                'cottura' => 'required|max:10|min:5',
+                'peso' => 'required|max:10|min:4',
+                'descrizione' => 'nullable|max:65535'
+            ],
+            [
+                'src.url' => 'Il campo src deve contenere un url valido!',
+                'src.required' => 'Il campo src deve necessariamente essere compilato!'
+            ]
+        );
 
-            $data = $request->all();
-            $pasta->update($data);
-            $pasta->save();
+        $data = $request->all();
+        $pasta->update($data);
+        $pasta->save();
 
-            return redirect()->route('pastas.edit', ['pasta' => $pasta])->with('status', 'Pasta aggiornata con successo');
-
-        } else {
-            abort(404);
-        }
+        return redirect()->route('pastas.edit', ['pasta' => $pasta])->with('status', 'Pasta aggiornata con successo');
 
     }
 
@@ -115,12 +132,8 @@ class PastaController extends Controller
     public function destroy(Pasta $pasta)
     {
 
-        if ($pasta) {
-            $pasta->delete();
-            return redirect()->route('pastas.index');
-        } else {
-            abort(404);
-        }
+        $pasta->delete();
+        return redirect()->route('pastas.index');
 
     }
 }

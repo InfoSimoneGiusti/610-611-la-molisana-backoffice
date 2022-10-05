@@ -32,7 +32,7 @@
                     <a class="btn btn-primary" href="{{route('pastas.show', ['pasta' => $formato])}}">Vedi</a>
                     <a class="btn btn-warning" href="{{route('pastas.edit', ['pasta' => $formato])}}">Modifica</a>
 
-                    <form action="{{route('pastas.destroy', ['pasta' => $formato])}}" method="POST">
+                    <form action="{{route('pastas.destroy', ['pasta' => $formato])}}" method="POST" onsubmit="return confirm('Vuoi cancellare il formato di pasta selezionato?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">Elimina</button>
